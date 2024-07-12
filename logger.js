@@ -1,4 +1,4 @@
-// logger.js v0.1
+// logger.js v0.2
 
 export default class Logger
 {
@@ -15,115 +15,118 @@ export default class Logger
 
     static #LogLevelStr =
     {
-        0: 'T',
-        1: 'D',
-        2: 'I',
-        3: 'W',
-        4: 'E',
-        5: 'T',
-        6: 'N'
+        0: `T`,
+        1: `D`,
+        2: `I`,
+        3: `W`,
+        4: `E`,
+        5: `C`,
+        6: `N`
     }
 
-    constructor(minLogLevel = Logger.LogLevel.TRACE)
-    {
-        this.minLogLevel = minLogLevel;
-    }
+    static minLogLevel = Logger.LogLevel.TRACE;
+    static progressStarted = false;
 
-    log(moduleName, ...messages)
+    static log(logLevel, moduleName, ...messages)
     {
-        this.logTrace(moduleName, ...messages);
-    }
-
-    logTrace(moduleName, ...messages)
-    {
-        if (this.minLogLevel <= Logger.LogLevel.TRACE)
+        switch(logLevel)
         {
-            this.endProgress();
-            console.log(this.createLogHeader(Logger.LogLevel.TRACE, moduleName), ...messages);
+            case LogLevel.TRACE:
+                Logger.logTrace(moduleName, ...messages);
+                break;
+        }
+    }
+
+    static logTrace(moduleName, ...messages)
+    {
+        if (Logger.minLogLevel <= Logger.LogLevel.TRACE)
+        {
+            Logger.endProgress();
+            console.log(Logger.createLogHeader(Logger.LogLevel.TRACE, moduleName), ...messages);
         }
         else
         {
-            this.logProgress(moduleName, ...messages);
+            Logger.logProgress(moduleName, ...messages);
         }
     }
 
-    logDebug(moduleName, ...messages)
+    static logDebug(moduleName, ...messages)
     {
-        if (this.minLogLevel <= Logger.LogLevel.DEBUG)
+        if (Logger.minLogLevel <= Logger.LogLevel.DEBUG)
         {
-            this.endProgress();
-            console.log(this.createLogHeader(Logger.LogLevel.DEBUG, moduleName), ...messages);
+            Logger.endProgress();
+            console.log(Logger.createLogHeader(Logger.LogLevel.DEBUG, moduleName), ...messages);
         }
         else
         {
-            this.logProgress(moduleName, ...messages);
+            Logger.logProgress(moduleName, ...messages);
         }
     }
 
-    logInfo(moduleName, ...messages)
+    static logInfo(moduleName, ...messages)
     {
-        if (this.minLogLevel <= Logger.LogLevel.INFO)
+        if (Logger.minLogLevel <= Logger.LogLevel.INFO)
         {
-            this.endProgress();
-            console.info(this.createLogHeader(Logger.LogLevel.INFO, moduleName), ...messages);
+            Logger.endProgress();
+            console.info(Logger.createLogHeader(Logger.LogLevel.INFO, moduleName), ...messages);
         }
         else
         {
-            this.logProgress(moduleName, ...messages);
+            Logger.logProgress(moduleName, ...messages);
         }
     }
 
-    logWarn(moduleName, ...messages)
+    static logWarn(moduleName, ...messages)
     {
-        if (this.minLogLevel <= Logger.LogLevel.WARN)
+        if (Logger.minLogLevel <= Logger.LogLevel.WARN)
         {
-            this.endProgress();
-            console.warn(this.createLogHeader(Logger.LogLevel.WARN, moduleName), ...messages);
+            Logger.endProgress();
+            console.warn(Logger.createLogHeader(Logger.LogLevel.WARN, moduleName), ...messages);
         }
         else
         {
-            this.logProgress(moduleName, ...messages);
+            Logger.logProgress(moduleName, ...messages);
         }
     }
 
-    logError(moduleName, ...messages)
+    static logError(moduleName, ...messages)
     {
-        if (this.minLogLevel <= Logger.LogLevel.ERROR)
+        if (Logger.minLogLevel <= Logger.LogLevel.ERROR)
         {
-            this.endProgress();
-            console.error(this.createLogHeader(Logger.LogLevel.ERROR, moduleName), ...messages);
+            Logger.endProgress();
+            console.error(Logger.createLogHeader(Logger.LogLevel.ERROR, moduleName), ...messages);
         }
         else
         {
-            this.logProgress(moduleName, ...messages);
+            Logger.logProgress(moduleName, ...messages);
         }
     }
 
-    logProgress(moduleName, ...messages)
+    static logProgress(moduleName, ...messages)
     {
-        if (this.minLogLevel <= Logger.LogLevel.TTY_ONLY && process.stdout.isTTY)
+        if (Logger.minLogLevel <= Logger.LogLevel.TTY_ONLY && process.stdout.isTTY)
         {
-            if (this.progressStarted)
+            if (Logger.progressStarted)
             {
                 process.stdout.clearLine(0);
                 process.stdout.cursorTo(0);
             }
-            this.progressStarted = true;
-            process.stdout.write(`${this.createLogHeader(Logger.LogLevel.TRACE, moduleName)} ${Array.prototype.join.call(messages, ' ')}`);
+            Logger.progressStarted = true;
+            process.stdout.write(`${Logger.createLogHeader(Logger.LogLevel.TRACE, moduleName)} ${Array.prototype.join.call(messages, ` `)}`);
         }
     }
 
-    endProgress()
+    static endProgress()
     {
-        if (this.progressStarted)
+        if (Logger.progressStarted)
         {
             process.stdout.clearLine(0);
             process.stdout.cursorTo(0);
-            this.progressStarted = false;
+            Logger.progressStarted = false;
         }
     }
 
-    createLogHeader(logLevel, moduleName)
+    static createLogHeader(logLevel, moduleName)
     {
         let logMessage = `${(new Date()).toISOString()}|${Logger.#LogLevelStr[logLevel]}|`;
         if (moduleName != null && moduleName.length > 0)
@@ -132,7 +135,4 @@ export default class Logger
         }
         return logMessage;
     }
-
-    minLogLevel = false;
-    progressStarted = false;
 }
