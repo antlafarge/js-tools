@@ -16,12 +16,12 @@ export default class Logger
     static #LogLevelStr =
     {
         0: `Tmp`,
-        1: `Dgb`,
+        1: `Dbg`,
         2: `Log`,
-        3: `Inf`,
-        4: `Wrn`,
-        5: `Err`,
-        6: `Not`
+        3: `Nfo`,
+        4: `WRN`,
+        5: `ERR`,
+        6: `   `
     }
 
     static minLogLevel = Logger.LogLevel.DEBUG;
